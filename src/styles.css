@@ -176,3 +176,4 @@ input:disabled { background: #f3f5f4; color: #9aa39e; }
 .login .titulo { text-align: center; }
 .vista { height: 100%; }
 .vista[hidden] { display: none; }
+.reloj-botones button.peligro { background: #b3261e; border-color: #b3261e; }

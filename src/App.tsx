@@ -9,6 +9,7 @@ const MIN = 60_000;
 export function App() {
   const app = useApp();
   const [vista, setVista] = useState<'cliente' | 'dueno'>('cliente');
+  const [reiniciando, setReiniciando] = useState(false);
   const { fecha, minutos } = aHoraAR(app.ahora);
 
   return (
@@ -28,7 +29,14 @@ export function App() {
             <button onClick={() => app.adelantarReloj(120 * MIN)}>+2 h</button>
             <button onClick={() => app.adelantarReloj(24 * 60 * MIN)}>+1 día</button>
             {app.desfaseRelojMs !== 0 && <button onClick={() => app.adelantarReloj(0)}>Hora real</button>}
-            <button onClick={() => { if (confirm('¿Borrar todos los datos de la preview y volver a empezar?')) app.reiniciar(); }}>Reiniciar</button>
+            {reiniciando ? (
+              <>
+                <button className="peligro" onClick={() => { app.reiniciar(); setReiniciando(false); }}>Sí, borrar datos</button>
+                <button onClick={() => setReiniciando(false)}>No</button>
+              </>
+            ) : (
+              <button onClick={() => setReiniciando(true)}>Reiniciar</button>
+            )}
           </span>
         </div>
       </aside>

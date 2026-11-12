@@ -77,6 +77,7 @@ function Login({ onOk }: { onOk: () => void }) {
 
 function TarjetaReserva({ app, r, compacta }: { app: App; r: Reserva; compacta?: boolean }) {
   const [error, setError] = useState<string | null>(null);
+  const [baja, setBaja] = useState(false);
   const restante = r.venceEn ? r.venceEn - app.ahora : 0;
   const urgente = r.estado === 'pendiente' && restante < 15 * 60_000;
   const hacer = (f: Parameters<App['hacer']>[0]) => setError(app.hacer(f));
@@ -119,9 +120,16 @@ function TarjetaReserva({ app, r, compacta }: { app: App; r: Reserva; compacta?:
           <button className="boton" onClick={() => hacer((e, a) => reconfirmarLiberada(e, r.id, a))}>Re-confirmar (pagó tarde)</button>
         )}
         {r.estado === 'confirmada' && (
-          <button className="boton boton-peligro-suave" onClick={() => { if (confirm('¿Dar de baja esta reserva?')) hacer((e, a) => cancelarPorDueno(e, r.id, a)); }}>Dar de baja</button>
+          baja ? (
+            <>
+              <button className="boton boton-peligro" onClick={() => { setBaja(false); hacer((e, a) => cancelarPorDueno(e, r.id, a)); }}>Sí, dar de baja</button>
+              <button className="boton" onClick={() => setBaja(false)}>No</button>
+            </>
+          ) : (
+            <button className="boton boton-peligro-suave" onClick={() => setBaja(true)}>Dar de baja</button>
+          )
         )}
-        {r.telefono && (r.estado === 'pendiente' || r.estado === 'confirmada') && (
+        {r.telefono && !baja && (r.estado === 'pendiente' || r.estado === 'confirmada') && (
           <a className="boton boton-whatsapp" href={enlaceWhatsApp(r.telefono, msg)} target="_blank" rel="noreferrer">WhatsApp</a>
         )}
       </div>
